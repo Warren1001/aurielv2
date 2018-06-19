@@ -1,16 +1,15 @@
 package com.kabryxis.auriel.command;
 
 import com.kabryxis.auriel.user.UserData;
-import com.kabryxis.kabutils.cache.Cache;
 import com.kabryxis.kabutils.command.CommandIssuer;
 
 import sx.blah.discord.handle.obj.IMessage;
 
 public class UserIssuer implements CommandIssuer {
 	
-	private IMessage msg;
+	private final IMessage msg;
 	
-	public void reuse(IMessage msg) {
+	public UserIssuer(IMessage msg) {
 		this.msg = msg;
 	}
 	
@@ -26,9 +25,4 @@ public class UserIssuer implements CommandIssuer {
 		msg.reply(message);
 	}
 	
-	@Override
-	public void cache() {
-		msg = null;
-		Cache.cache(this);
-	}
 }

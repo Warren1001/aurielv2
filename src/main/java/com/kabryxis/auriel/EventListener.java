@@ -1,7 +1,6 @@
 package com.kabryxis.auriel;
 
 import com.kabryxis.auriel.command.UserIssuer;
-import com.kabryxis.kabutils.cache.Cache;
 import com.kabryxis.kabutils.command.CommandManager;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -21,12 +20,7 @@ public class EventListener {
 	public void onMessage(MessageReceivedEvent event) {
 		IMessage msg = event.getMessage();
 		String message = msg.getContent();
-		if(commandManager.isCommand(message)) {
-			UserIssuer user = Cache.get(UserIssuer.class);
-			user.reuse(msg);
-			commandManager.handle(user, commandManager.getAlias(message), commandManager.getArgs(message));
-			user.cache();
-		}
+		if(commandManager.isCommand(message)) commandManager.handle(new UserIssuer(msg), commandManager.getAlias(message), commandManager.getArgs(message));
 	}
 	
 }

@@ -8,14 +8,14 @@ import java.util.*;
 
 public class UserData {
 	
-	private static final Map<IUser, UserData> DATA = new HashMap<>();
+	private static final Map<IUser, UserData> userDatas = new HashMap<>();
 	
 	public static UserData getData(IUser user) {
-		return DATA.computeIfAbsent(user, UserData::new);
+		return userDatas.computeIfAbsent(user, UserData::new);
 	}
 	
 	public static void saveAll() {
-		DATA.values().forEach(UserData::save);
+		userDatas.values().forEach(UserData::save);
 	}
 	
 	private final IUser user;
@@ -35,9 +35,12 @@ public class UserData {
 		data.loadSync();
 		grantedPermissions = new ArrayList<>();
 		negatedPermissions = new ArrayList<>();
-		for(String permission : data.getList("permissions", String.class)) {
-			if(permission.startsWith("-")) negatedPermissions.add(permission.substring(1, permission.length()));
-			else grantedPermissions.add(permission);
+		List<String> permissionsList = data.getList("permissions", String.class);
+		if(permissionsList != null) {
+			for(String permission : permissionsList) {
+				if(permission.startsWith("-")) negatedPermissions.add(permission.substring(1, permission.length()));
+				else grantedPermissions.add(permission);
+			}
 		}
 	}
 	
@@ -52,12 +55,13 @@ public class UserData {
 	}
 	
 	public boolean hasPermission(String permission) {
-		return !negatedPermissions.contains(permission) && (grantedPermissions.contains(permission) || hasWildcardPermission(permission));
+		return permission.isEmpty() || (!negatedPermissions.contains(permission) && !hasWildcardPermission(negatedPermissions, permission)
+				&& (grantedPermissions.contains(permission) || hasWildcardPermission(grantedPermissions, permission)));
 	}
 	
-	private boolean hasWildcardPermission(String permission) {
+	private boolean hasWildcardPermission(List<String> permissions, String permission) {
 		for(int index = permission.length() - 1; index >= 0; index--) {
-			if(permission.charAt(index) == '.' && grantedPermissions.contains(permission.substring(0, index + 1) + "*")) return true;
+			if(permission.charAt(index) == '.' && permissions.contains(permission.substring(0, index + 1) + "*")) return true;
 		}
 		return false;
 	}
