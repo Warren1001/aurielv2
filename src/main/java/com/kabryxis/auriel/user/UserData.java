@@ -51,6 +51,7 @@ public class UserData {
 			list.addAll(negatedPermissions);
 			data.set("permissions", list);
 			data.save();
+			dataModified = false;
 		}
 	}
 	

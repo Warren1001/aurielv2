@@ -1,9 +1,7 @@
 package com.kabryxis.auriel;
 
 import com.kabryxis.auriel.command.CommandListener;
-import com.kabryxis.auriel.game.HGPlayer;
 import com.kabryxis.auriel.game.HungerGames;
-import com.kabryxis.auriel.game.InventoryAction;
 import com.kabryxis.auriel.user.UserData;
 import com.kabryxis.kabutils.Console;
 import com.kabryxis.kabutils.ConsoleIssuer;
@@ -63,8 +61,6 @@ public class Auriel {
 		commandManager.registerListener(new CommandListener(this));
 		client.getDispatcher().registerListener(new EventListener(this));
 		game = new HungerGames(this);
-		game.registerExtraAction("inv", new InventoryAction());
-		HGPlayer.loadExistingPlayers(this);
 	}
 	
 	public IDiscordClient getClient() {
@@ -84,7 +80,6 @@ public class Auriel {
 	}
 	
 	public void close() {
-		//game.saveData();
 		UserData.saveAll();
 		Threads.stopThreads();
 		client.logout();
